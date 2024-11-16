@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Rules & Challan Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+            animation: fadeIn 2s ease-in-out;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #00a78e;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideInFromTop 1.5.s ease-out;
+        }
+
+        @keyframes slideInFromTop {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(0); }
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Menu Icon */
+        .menu-icon {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .menu-icon div {
+            width: 30px;
+            height: 4px;
+            background-color: white;
+            margin: 4px 0;
+            border-radius: 5px;
+        }
+
+        /* Account Icon */
+        .account-icon {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .account-icon img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        /* Side Navigation Styles */
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #00a78e;
+            color: white;
+            overflow: hidden;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            padding-top: 20px;
+            z-index: 1000;
+        }
+
+        .side-nav.active {
+            left: 0;
+        }
+
+        .side-nav a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background 0.2s;
+        }
+
+        .side-nav a:hover {
+            background-color: #555;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Content Styles */
+        .content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            transition: transform 0.5s ease, opacity 0.5s ease-in-out;
+            animation: fadeInCard 0.5s ease-out;
+        }
+
+        @keyframes fadeInCard {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .card img.icon {
+            width: 60px;
+            height: 60px;
+            margin-right: 20px;
+        }
+
+        .card h2 { font-size: 24px; color: #333; margin: 0; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; }
+            .header h1 { font-size: 20px; }
+        }
+
+        /* Traffic Signs Styles */
+        .traffic-signs {
+            display: flex;
+            flex-direction: row; /* Align items in a row */
+            flex-wrap: wrap; /* Allows wrapping if there are too many items for one row */
+            justify-content: center; /* Centers the items */
+            gap: 10px; /* Adds spacing between cards */
+            margin-top: 40px;
+        }
+
+        .traffic-signs .sign-card {
+            width: 100px;
+            height: 120px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column; /* Align the image and text vertically */
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 10px;
+        }
+
+        .traffic-signs .sign-card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+
+        .traffic-signs .sign-card p {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .map-section {
+            margin-top: 40px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: fadeInMap 2s ease-out;
+        }
+
+        @keyframes fadeInMap {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .map-embed {
+            width: 100%;
+            height: 300px;
+            border: none;
+            border-radius: 8px;
+        }
+      .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #ddd;
+            padding: 20px 0;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            animation: fadeInFooter 2s ease-out;
+        }
+
+        @keyframes fadeInFooter {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Side Navigation -->
+    <div class="side-nav" id="sideNav">
+        <span class="close-btn" onclick="toggleMenu()">&times;</span>
+        <a href="account.html">Account</a>              
+        <a href="notifications.html">Notifications</a>
+        <a href="rules.html">Traffic Rules</a>
+        <a href="fines-history.html">Fines History</a>
+        <a href="fines.html">Fines</a>
+        <a href="corruption.html">Deal with Corruption</a>        
+    </div>
+
+    <header class="header">
+        <div class="menu-icon" id="menuIcon" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <h1>Third Eye</h1>
+        
+        <a href="account.html" class="account-icon">
+            <img src="account_icon.png" alt="Account Icon">
+        </a>
+    </header>
+
+    <div class="content">
+        <a href="rules.html" style="text-decoration: none;">
+            <div class="card">
+                <img src="traffic_rules_icon.png" alt="Traffic Rules Icon" class="icon">
+                <h2>Traffic Rules & Regulations</h2>
+            </div>
+        </a>
+        <a href="fines-history.html" style="text-decoration: none;">
+            <div class="card">
+                <img src="fines_history_icon.png" alt="Challan History Icon" class="icon">
+                <h2>Fines History</h2>
+            </div>
+        </a>
+        <a href="fines.html" style="text-decoration: none;">
+            <div class="card">
+                <img src="fines_icon.png" alt="Fines Icon" class="icon">
+                <h2>Fines</h2>
+                     </div>
+     </a>
+     <a href="accident.html" style="text-decoration: none;">
+     	<div class="card">
+     	<h2>AccidentLocation</h2>
+   </div>
+   </a>
+       <a href="certificates.html" style="text-decoration: none;">
+          <div class="card">
+        <h2>Details</h2>  
+    </div>
+</a>
+
+<a href="deetails.html" style="text-decoration: none;">
+    <div class="card">
+        <h2>Primary Treatment</h2>
+    </div>
+</a>
+
+<a href="majorproblems.html" style="text-decoration: none;">
+    <div class="card">
+        <h2>Vehicle Problems & Fixes</h2>
+    </div>
+</a>
+
+<a href="car.html" style="text-decoration: none;">
+    <div class="card"> 	
+        <h2>Car Safety Features Guide</h2>
+    </div>
+</a>
+
+<a href="alerts.html" style="text-decoration: none;">  
+    <div class="card">  
+        <h2>Weather & Road Condition Alerts</h2>
+        </div>
+        </a>
+        <a href="NewDriverTutorial.html" style="text-decoration: none;">
+        	<div class="card">
+        	<h2>New Driver Tutorial</h2>
+
+     </div>
+     </a>
+     <a href="LegalResources.html" style="text-decoration: none;">
+     	<div class="card">
+     	<h2>Legal Resources</h2>
+     </div>
+     </a>
+     
+     	<div class="card">
+        <a href="emargencycontactfeature.html" style="text-decoration: none;">
+     	<h2>Emergency Contacts</h2>
+     </div>
+     </a>
+     <a href="communityfeedbackonroad .html" style="text-decoration: none;">
+     	<div class="card">
+     	<h2>Feedback on Road</h2>
+     </div>
+     </a>
+     <a href="incidentreporting .html" style="text-decoration: none;">
+     	<div class="card">
+     	<h2>Incident Reporting</h2>
+     </div>
+     </a>
+     <a href="Calculator.html" style="text-decoration: none;">
+     	<div class="card">
+     	<h2>Trip Calculator</h2>
+   </div>
+        </a>
+        
+<a href="quiz.html" style="text-decoration: none;">
+	<div class="card">
+		<h2>Traffic Quiz</h2>
+   </div>
+</a>
+      </div>
+        </a>
+    </div>
+
+    <div id="traffic-signs">
+        <h2>Traffic Signs</h2>
+        <div class="traffic-signs">
+            <div class="sign-card">
+            	<a href="Mandatory.html" style="text-decoration: none;">
+                <img src="sign1.png" alt="Sign 1">
+                <p>Mandatory Signs</p>
+            </div>
+            <div class="sign-card">
+            	<a href="cautionary.html" style="text-decoration: none;">
+                <img src="sign2.png" alt="Sign 2">
+                <p>Causionary Signs</p>
+            </div>
+            <div class="sign-card">
+            	<a href="Informatory.html" style="text-decoration: none;">
+                <img src="sign3.png" alt="Sign 3">
+                <p>Informatory Signs</p>
+            </div>
+            <!-- Add more sign cards with labels as needed -->
+        </div>
+    </div>
+
+    <div class="map-section">
+        <h2>Map Location</h2>
+        <iframe class="map-embed" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.9433566180535!2d-122.08424938468135!3d37.42199917982522!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fbb3fae40c551%3A0x1f04128b09028272!2sGoogleplex!5e0!3m2!1sen!2sus!4v1605867676014!5m2!1sen!2sus" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+<footer class="footer">
+        <p>© 2024 All Rights Reserved by Roshan Dora</p>
+    </footer>
+    <script>
+        // Toggle side navigation menu
+        function toggleMenu() {
+            var sideNav = document.getElementById('sideNav');
+            sideNav.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
